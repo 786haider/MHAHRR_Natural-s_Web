@@ -1,3 +1,6 @@
+// 
+
+
 "use client";
 import React, { useState, useEffect } from 'react';
 import { ChevronDown, Leaf, Sparkles, Heart } from 'lucide-react';
@@ -14,7 +17,28 @@ export default function LandingPage() {
     };
 
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    
+    // Add marquee animation styles
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes marquee {
+        0% {
+          transform: translateX(0);
+        }
+        100% {
+          transform: translateX(-50%);
+        }
+      }
+      .animate-marquee {
+        animation: marquee 30s linear infinite;
+      }
+    `;
+    document.head.appendChild(style);
+    
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      document.head.removeChild(style);
+    };
   }, []);
 
   const scrollToContent = () => {
@@ -114,80 +138,26 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-24 px-4">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-5xl font-bold text-center mb-16 text-gray-800">
-            Our Philosophy
-          </h2>
+      {/* Sliding Text Marquee */}
+      <section className="py-12 bg-gray-100 overflow-hidden">
+        <div className="whitespace-nowrap">
+          <div className="inline-block animate-marquee">
+            <span className="text-6xl md:text-8xl font-bold text-blue-200 uppercase tracking-wider">
+             |• لقد خلقنا الإنسان في أحسن تقويم 
+              {/* PURE • HEALING • SUSTAINABLE • NATURAL • PURE • HEALING • SUSTAINABLE • NATURAL •  */}
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Feature 1 */}
-            <div className="group bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
-              <div className="bg-emerald-100 w-16 h-16 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                <Leaf className="w-8 h-8 text-emerald-600" />
-              </div>
-              <h3 className="text-2xl font-bold mb-4 text-gray-800">Herbality</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Harnessing the power of nature's finest botanicals, carefully selected for their healing properties and therapeutic benefits.
-              </p>
-            </div>
-
-            {/* Feature 2 */}
-            <div className="group bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 md:mt-8">
-              <div className="bg-emerald-100 w-16 h-16 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                <Sparkles className="w-8 h-8 text-emerald-600" />
-              </div>
-              <h3 className="text-2xl font-bold mb-4 text-gray-800">Purity</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Committed to using only the purest ingredients, free from harmful chemicals, ensuring safe and effective natural remedies.
-              </p>
-            </div>
-
-            {/* Feature 3 */}
-            <div className="group bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
-              <div className="bg-emerald-100 w-16 h-16 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                <Heart className="w-8 h-8 text-emerald-600" />
-              </div>
-              <h3 className="text-2xl font-bold mb-4 text-gray-800">Humanity</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Dedicated to improving lives through compassionate care, making wellness accessible to all who seek natural healing.
-              </p>
-            </div>
+            </span>
+          </div>
+          <div className="inline-block animate-marquee">
+            <span className="text-6xl md:text-8xl font-bold text-green-200 uppercase tracking-wider">
+              {/* PURE • HEALING • SUSTAINABLE • NATURAL • PURE • HEALING • SUSTAINABLE • NATURAL • */}
+              hhhh لقد خلقنا الإنسان في أحسن تقويم •|
+            </span>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-24 px-4 bg-emerald-600">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Begin Your Healing Journey
-          </h2>
-          <p className="text-xl text-emerald-50 mb-10">
-            Experience the transformative power of natural remedies crafted with care.
-          </p>
-          <button className="bg-white text-emerald-600 px-12 py-4 rounded-full text-lg font-semibold hover:bg-emerald-50 transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-            Shop Now
-          </button>
-        </div>
-      </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12 px-4">
-        <div className="max-w-6xl mx-auto text-center">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Leaf className="w-6 h-6 text-emerald-400" />
-            <span className="text-2xl font-bold">Healing Solutions</span>
-          </div>
-          <p className="text-gray-400 mb-6">
-            MHAHRR Natural Formulations • Karachi, Pakistan
-          </p>
-          <p className="text-gray-500 text-sm">
-            © 2025 Healing Solutions. All rights reserved.
-          </p>
-        </div>
-      </footer>
     </div>
   );
 }
