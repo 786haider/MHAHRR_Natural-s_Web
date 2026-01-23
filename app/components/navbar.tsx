@@ -3,7 +3,6 @@ import { useState, useCallback, memo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import Logo from '../../images/logo_without_text_bgremove.png';
 
 interface NavLinkProps {
     href: string;
@@ -73,7 +72,7 @@ const Navbar = () => {
             <Link href="/" className="flex items-center gap-1 group" aria-label="MHAHRR Home">
                 <div className="relative w-24 h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 flex-shrink-0">
                     <Image
-                        src={Logo}
+                        src="/logo_without_text_bgremove.png"
                         alt="MHAHRR Natural Logo"
                         fill
                         sizes="(max-width: 768px) 96px, (max-width: 1024px) 112px, 128px"

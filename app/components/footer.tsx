@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import React from 'react';
 import { MapPin, Mail, Phone } from 'lucide-react';
-import Logo from '../../images/logo_without_text_bgremove.png';
 
 
 export default function Footer() {
@@ -14,7 +13,7 @@ export default function Footer() {
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white rounded-full flex items-center justify-center flex-shrink-0">
                 <Image 
-  src={Logo} 
+  src="/logo_without_text_bgremove.png" 
   alt="MHAHRR Natural Logo" 
   width={48} 
   height={48}
