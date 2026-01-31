@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/navbar";
+import Footer from "./components/footer";
 
 // import Icon from '../../images/logo_without_text_bgremove.png'
 
@@ -37,6 +38,7 @@ export default function RootLayout({
         <Navbar />
         {children}
         <Analytics />
+        <Footer />
       </body>
     </html>
   );

@@ -2,6 +2,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import Image from 'next/image';
 
 export default function About() {
     const heroRef = useRef<HTMLDivElement>(null);
@@ -101,6 +102,13 @@ export default function About() {
                 {/* Main Content */}
                 <div className="max-w-7xl mx-auto text-center relative z-10">
                     <div className="animate-on-scroll opacity-0" style={{ animationDelay: '0.2s' }}>
+                        <Image
+                            src="/logo_without_text_bgremove.png"
+                            alt="MHAHRR Natural Logo"
+                            width={100}
+                            height={100}
+                            className="mx-auto mb-4" // Centering and spacing
+                        />
                         <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold text-gray-900 mb-6 tracking-tight">
                             About{' '}
                             <span className="bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 bg-clip-text text-transparent">
