@@ -1,14 +1,18 @@
 "use client";
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronDown, Leaf, Sparkles, Heart } from 'lucide-react';
+import { ChevronDown, Leaf, Sparkles, Heart, Instagram, Linkedin } from 'lucide-react';
 import Image from 'next/image';
 
 export default function LandingPage() {
   const [scrollY, setScrollY] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const [visibleCards, setVisibleCards] = useState<number[]>([]);
+  const [visibleSections, setVisibleSections] = useState<string[]>([]);
   const sectionRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const curatedRef = useRef<HTMLDivElement>(null);
+  const whereWeAreRef = useRef<HTMLDivElement>(null);
+  const readyToEmbraceRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setIsVisible(true);
@@ -16,6 +20,7 @@ export default function LandingPage() {
     const handleScroll = () => {
       setScrollY(window.scrollY);
 
+      // Handle philosophy cards animation
       if (sectionRef.current) {
         const sectionTop = sectionRef.current.offsetTop;
         const scrollPosition = window.scrollY + window.innerHeight;
@@ -36,9 +41,33 @@ export default function LandingPage() {
           }
         });
       }
+
+      // Handle sections scroll animation
+      const sections = [
+        { ref: curatedRef, name: 'curated' },
+        { ref: whereWeAreRef, name: 'whereWeAre' },
+        { ref: readyToEmbraceRef, name: 'readyToEmbrace' }
+      ];
+
+      sections.forEach(({ ref, name }) => {
+        if (ref.current) {
+          const rect = ref.current.getBoundingClientRect();
+          const windowHeight = window.innerHeight;
+          
+          if (rect.top < windowHeight * 0.75) {
+            setVisibleSections(prev => {
+              if (!prev.includes(name)) {
+                return [...prev, name];
+              }
+              return prev;
+            });
+          }
+        }
+      });
     };
 
     window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Initial check
     
     const style = document.createElement('style');
     style.textContent = `
@@ -49,6 +78,64 @@ export default function LandingPage() {
       .animate-marquee { animation: marquee 30s linear infinite; }
       .card-enter { opacity: 1; transform: translateY(0); }
       .card-exit { opacity: 0; transform: translateY(50px); }
+      
+      @keyframes slideUpFade {
+        from {
+          opacity: 0;
+          transform: translateY(60px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      .animate-slide-up {
+        animation: slideUpFade 0.8s ease-out forwards;
+      }
+
+      @keyframes gradientShift {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      @keyframes float {
+        0%, 100% {
+          transform: translateY(0px) rotate(0deg);
+        }
+        50% {
+          transform: translateY(-20px) rotate(5deg);
+        }
+      }
+
+      @keyframes pulse-glow {
+        0%, 100% {
+          opacity: 0.3;
+        }
+        50% {
+          opacity: 0.6;
+        }
+      }
+
+      .animate-gradient {
+        background-size: 200% 200%;
+        animation: gradientShift 15s ease infinite;
+      }
+
+      .animate-float {
+        animation: float 6s ease-in-out infinite;
+      }
+
+      .animate-pulse-glow {
+        animation: pulse-glow 4s ease-in-out infinite;
+      }
     `;
     document.head.appendChild(style);
     
@@ -203,8 +290,8 @@ export default function LandingPage() {
               isVisible={visibleCards.includes(2)}
               icon={<Heart className="w-6 h-6" />}
               title="Humanity"
-              quote="Care for people, care for the planet."
-              description="Compassion guides our hands. We create products that heal not just the body, but the spirit, ensuring wellness for our community and our world."
+              quote="Care crafted with compassion."
+              description="Beyond products, we create connections. Our commitment extends to ethical practices, sustainable sourcing, and supporting communities that help us bring nature's best to you."
               imageUrl="/sample.png"
               color="amber"
             />
@@ -212,260 +299,251 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <QuoteSliderSection />
-      <AboutSection />
-
-      <section className="relative h-[400px] overflow-hidden">
-        <Image src="/sample.png" alt="Green leaf close-up" fill className="object-cover" />
-      </section>
-    </div>
-  );
-}
-
-function QuoteSliderSection() {
-  const [currentSlide, setCurrentSlide] = useState(0);
-  const images = ["/sample.png", "/sample.png", "/sample.png", "/sample.png", "/sample.png"];
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % images.length);
-    }, 60000);
-    return () => clearInterval(interval);
-  }, [images.length]);
-
-  return (
-    <section className="relative h-[500px] md:h-[600px] overflow-hidden">
-      <div className="absolute inset-0">
-        {images.map((image, index) => (
-          <div
-            key={index}
-            className={`absolute inset-0 transition-opacity duration-1000 ${
-              index === currentSlide ? 'opacity-100' : 'opacity-0'
-            }`}
-          >
-            <Image src={image} alt={`Nature slide ${index + 1}`} fill className="object-cover" />
-            <div className="absolute inset-0 bg-black/40"></div>
+      {/* Curated Collections Section */}
+      <section 
+        ref={curatedRef}
+        className={`py-24 bg-gradient-to-b from-white to-emerald-50 ${
+          visibleSections.includes('curated') ? 'animate-slide-up' : 'opacity-0'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Curated Collections
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Discover our carefully crafted range of natural wellness products
+            </p>
           </div>
-        ))}
-      </div>
 
-      <div className="relative z-10 h-full flex items-center justify-center px-4">
-        <div className="text-center max-w-4xl">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-light text-white leading-tight mb-6">
-            &ldquo;Nature does not hurry,<br />
-            yet everything is<br />
-            accomplished.&rdquo;
-          </h2>
-          <p className="text-xl md:text-2xl text-white/80 italic font-serif">- Lao Tzu</p>
-        </div>
-      </div>
-
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-2">
-        {images.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentSlide(index)}
-            className={`w-2 h-2 rounded-full transition-all duration-300 ${
-              index === currentSlide ? 'bg-white w-8' : 'bg-white/50 hover:bg-white/75'
-            }`}
-            aria-label={`Go to slide ${index + 1}`}
-          />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function AboutSection() {
-  const [isCardHovered, setIsCardHovered] = useState(false);
-
-  return (
-    <>
-      <style dangerouslySetInnerHTML={{__html: `
-        @keyframes floatUpDown {
-          0%, 100% { transform: translate(-50%, 0); }
-          50% { transform: translate(-50%, -16px); }
-        }
-        .animate-float-card { animation: floatUpDown 2s ease-in-out infinite; }
-        .animate-float-card.paused { animation-play-state: paused; }
-      `}} />
-      
-      <section className="relative py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-            
-            <div className="relative">
-              <div className="relative rounded-2xl overflow-hidden shadow-2xl">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Collection Card 1 */}
+            <div className="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+              <div className="relative h-80 overflow-hidden">
                 <Image
                   src="/sample.png"
-                  alt="Hands working with natural herbs"
-                  width={800}
-                  height={600}
-                  className="w-full h-[500px] lg:h-[600px] object-cover"
+                  alt="Skincare Collection"
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-700"
                 />
-                <a
-                  href="#"
-                  onMouseEnter={() => setIsCardHovered(true)}
-                  onMouseLeave={() => setIsCardHovered(false)}
-                  className={`absolute bottom-8 left-1/2 bg-white rounded-lg shadow-xl p-6 w-[240px] cursor-pointer transition-all duration-500 ease-in-out hover:shadow-2xl hover:scale-105 animate-float-card ${
-                    isCardHovered ? 'paused' : ''
-                  }`}
-                >
-                  <div className="flex items-center justify-center mb-3">
-                    <div className={`w-16 h-16 transition-transform duration-500 ${
-                      isCardHovered ? 'rotate-12 scale-110' : 'rotate-0 scale-100'
-                    }`}>
-                      <Image
-                        src="/logo_without_text_bgremove.png"
-                        alt="MHAHRR Logo"
-                        width={64}
-                        height={64}
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                  </div>
-                  
-                  <h1 className="text-center text-base font-bold text-gray-900 mb-2">
-                    MHAHRR Natural&apos;s
-                  </h1>
-                  
-                  <h3 className="text-center text-xs text-emerald-600 font-medium mb-3">
-                    | Healing Solution
-                  </h3>
-                  
-                  <p className="text-center text-xs text-gray-500 uppercase tracking-wide leading-tight">
-                    Official Partner of<br />Nature
-                  </p>
-                </a>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                  <h3 className="text-2xl font-bold mb-2">Skincare Essentials</h3>
+                  <p className="text-sm text-white/90">Nourish and rejuvenate your skin naturally</p>
+                </div>
+              </div>
+              <div className="p-6">
+                <button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg font-semibold transition-colors">
+                  Explore Collection
+                </button>
               </div>
             </div>
 
-            <div className="space-y-6">
-              <div className="inline-block">
-                <span className="text-sm font-medium text-emerald-600 uppercase tracking-wider">
-                  The Origin Story
-                </span>
+            {/* Collection Card 2 */}
+            <div className="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+              <div className="relative h-80 overflow-hidden">
+                <Image
+                  src="/sample.png"
+                  alt="Wellness Collection"
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                  <h3 className="text-2xl font-bold mb-2">Wellness Range</h3>
+                  <p className="text-sm text-white/90">Holistic health from nature's bounty</p>
+                </div>
               </div>
+              <div className="p-6">
+                <button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg font-semibold transition-colors">
+                  Explore Collection
+                </button>
+              </div>
+            </div>
 
-              <h2 className="text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight">
-                <span className="text-black">Rooted in Karachi,</span>
-                <br />
-                <span className="text-emerald-500">Blooming </span>
-                <span className="text-cyan-400">for the World</span>
-              </h2>
-
-              <p className="text-gray-600 leading-relaxed text-[15px]">
-                Founded in <span className="font-semibold text-black">November 2025</span>, MHAHRR Natural emerged from a simple yet profound realization: the best solutions for our skin and health have existed for millennia, hidden in the leaves, roots, and waters of our earth.
-              </p>
-
-              <p className="text-gray-600 leading-relaxed text-[15px]">
-                Located in the vibrant heart of <span className="font-semibold text-black">Karachi, Sindh, Pakistan</span>, we blend traditional Eastern herbal wisdom with modern dermatological science. We are not just a brand; we are a movement towards conscious living.
-              </p>
-
-              <p className="text-gray-600 leading-relaxed text-[15px]">
-                Our slogan, <span className="italic text-emerald-600">&quot;Healing Solution. Care for your skin and health&quot;</span>, is more than a tagline—it is the promise we weave into every bottle, jar, and package we deliver to your doorstep.
-              </p>
-
-              <div className="grid grid-cols-2 gap-8 pt-8">
-                <div className="border-l-4 border-transparent pl-0">
-                  <div className="text-5xl lg:text-6xl font-bold text-black mb-2">100%</div>
-                  <div className="text-xs text-gray-500 uppercase tracking-wider">Natural Ingredients</div>
+            {/* Collection Card 3 */}
+            <div className="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+              <div className="relative h-80 overflow-hidden">
+                <Image
+                  src="/sample.png"
+                  alt="Herbal Collection"
+                  fill
+                  className="object-cover group-hover:scale-110 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                  <h3 className="text-2xl font-bold mb-2">Herbal Remedies</h3>
+                  <p className="text-sm text-white/90">Time-tested herbal formulations</p>
                 </div>
-
-                <div className="border-l-4 border-gray-200 pl-6">
-                  <div className="text-5xl lg:text-6xl font-bold text-black mb-2">0%</div>
-                  <div className="text-xs text-gray-500 uppercase tracking-wider">Artificial Additives</div>
-                </div>
+              </div>
+              <div className="p-6">
+                <button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-lg font-semibold transition-colors">
+                  Explore Collection
+                </button>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Curated Collections Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4">
-          {/* Header */}
-          <div className="flex justify-between items-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-bold">
-              <span className="text-gray-900">Curated </span>
-              <span className="text-emerald-600 italic font-serif">Collections</span>
+      {/* Where We Are Section */}
+      <section 
+        ref={whereWeAreRef}
+        className={`py-24 bg-gradient-to-b from-emerald-50 to-white ${
+          visibleSections.includes('whereWeAre') ? 'animate-slide-up' : 'opacity-0'
+        }`}
+      >
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+              Where We Are
             </h2>
-            <button className="flex items-center gap-2 text-gray-700 hover:text-emerald-600 transition-colors group">
-              <span className="text-sm font-medium">View All Products</span>
-              <ChevronDown className="w-4 h-4 rotate-[-90deg] group-hover:translate-x-1 transition-transform" />
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              Connect with us on social media and stay updated with our latest products, wellness tips, and community stories.
+            </p>
+          </div>
+
+          {/* Social Media Icons */}
+          <div className="flex justify-center items-center gap-12 flex-wrap">
+            {/* Instagram */}
+            <a 
+              href="https://instagram.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="group flex flex-col items-center gap-4 transition-all duration-300 hover:scale-125 cursor-pointer"
+            >
+              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center shadow-lg group-hover:shadow-2xl transition-all duration-300 group-hover:rotate-6">
+                <Instagram className="w-12 h-12 text-white" />
+              </div>
+              <span className="text-gray-900 font-semibold text-base group-hover:text-pink-600 transition-colors">Instagram</span>
+            </a>
+
+            {/* TikTok */}
+            <a 
+              href="https://tiktok.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="group flex flex-col items-center gap-4 transition-all duration-300 hover:scale-125 cursor-pointer"
+            >
+              <div className="w-24 h-24 rounded-full bg-black flex items-center justify-center shadow-lg group-hover:shadow-2xl transition-all duration-300 group-hover:rotate-6">
+                <svg className="w-12 h-12 text-white" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                </svg>
+              </div>
+              <span className="text-gray-900 font-semibold text-base group-hover:text-black transition-colors">TikTok</span>
+            </a>
+
+            {/* Facebook */}
+            <a 
+              href="https://facebook.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="group flex flex-col items-center gap-4 transition-all duration-300 hover:scale-125 cursor-pointer"
+            >
+              <div className="w-24 h-24 rounded-full bg-blue-600 flex items-center justify-center shadow-lg group-hover:shadow-2xl transition-all duration-300 group-hover:rotate-6">
+                <svg className="w-12 h-12 text-white" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
+              </div>
+              <span className="text-gray-900 font-semibold text-base group-hover:text-blue-600 transition-colors">Facebook</span>
+            </a>
+
+            {/* X (Twitter) */}
+            <a 
+              href="https://x.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="group flex flex-col items-center gap-4 transition-all duration-300 hover:scale-125 cursor-pointer"
+            >
+              <div className="w-24 h-24 rounded-full bg-black flex items-center justify-center shadow-lg group-hover:shadow-2xl transition-all duration-300 group-hover:rotate-6">
+                <svg className="w-12 h-12 text-white" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+              </div>
+              <span className="text-gray-900 font-semibold text-base group-hover:text-black transition-colors">X</span>
+            </a>
+
+            {/* LinkedIn */}
+            <a 
+              href="https://linkedin.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="group flex flex-col items-center gap-4 transition-all duration-300 hover:scale-125 cursor-pointer"
+            >
+              <div className="w-24 h-24 rounded-full bg-blue-700 flex items-center justify-center shadow-lg group-hover:shadow-2xl transition-all duration-300 group-hover:rotate-6">
+                <Linkedin className="w-12 h-12 text-white" />
+              </div>
+              <span className="text-gray-900 font-semibold text-base group-hover:text-blue-700 transition-colors">LinkedIn</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Ready to Embrace Natural Healing Section */}
+      <section 
+        ref={readyToEmbraceRef}
+        className={`relative py-32 overflow-hidden ${
+          visibleSections.includes('readyToEmbrace') ? 'animate-slide-up' : 'opacity-0'
+        }`}
+      >
+        {/* Animated Green Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 via-green-500 to-emerald-700 animate-gradient"></div>
+        
+        {/* Animated Decorative Elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {/* Floating Leaf Shapes */}
+          <div className="absolute top-20 left-10 w-32 h-32 bg-emerald-400/20 rounded-full blur-3xl animate-float"></div>
+          <div className="absolute bottom-20 right-10 w-40 h-40 bg-green-400/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-emerald-300/20 rounded-full blur-2xl animate-float" style={{ animationDelay: '4s' }}></div>
+          
+          {/* Pulsing Glow Circles */}
+          <div className="absolute top-1/4 right-1/4 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-pulse-glow"></div>
+          <div className="absolute bottom-1/4 left-1/3 w-48 h-48 bg-white/10 rounded-full blur-3xl animate-pulse-glow" style={{ animationDelay: '2s' }}></div>
+          
+          {/* Decorative Leaf Icons */}
+          <div className="absolute top-10 right-20 opacity-20">
+            <Leaf className="w-16 h-16 text-white animate-float" />
+          </div>
+          <div className="absolute bottom-10 left-20 opacity-20">
+            <Leaf className="w-20 h-20 text-white animate-float" style={{ animationDelay: '3s' }} />
+          </div>
+          <div className="absolute top-1/3 left-10 opacity-15">
+            <Sparkles className="w-12 h-12 text-white animate-float" style={{ animationDelay: '1s' }} />
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="relative z-10 max-w-4xl mx-auto px-4 text-center">
+          <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
+            Ready to Embrace
+            <br />
+            <span className="text-emerald-100 italic font-serif">Natural Healing?</span>
+          </h2>
+          
+          <p className="text-xl md:text-2xl text-white/95 mb-12 max-w-3xl mx-auto leading-relaxed">
+            Join thousands who have switched to MHAHRR Natural for a healthier, purer lifestyle.
+          </p>
+
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+            <button className="group relative px-10 py-5 bg-white text-emerald-700 rounded-full text-lg font-bold transition-all duration-300 hover:scale-105 hover:shadow-2xl overflow-hidden">
+              <span className="relative z-10">Shop Now</span>
+              <div className="absolute inset-0 bg-emerald-50 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
+            </button>
+            
+            <button className="group px-10 py-5 bg-transparent border-3 border-white text-white rounded-full text-lg font-bold transition-all duration-300 hover:bg-white hover:text-emerald-700 hover:scale-105 hover:shadow-2xl">
+              Get in Touch
             </button>
           </div>
 
-          {/* Collections Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Large Card - Herbal Skincare */}
-            <div className="relative group overflow-hidden rounded-2xl h-[400px] cursor-pointer">
-              <Image
-                src="/sample.png"
-                alt="Herbal Skincare"
-                fill
-                className="object-cover transition-transform duration-700 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-              
-              <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-                <div className="inline-block px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs uppercase tracking-wider mb-3">
-                  Bestseller
-                </div>
-                <h3 className="text-3xl md:text-4xl font-bold mb-2">Herbal Skincare</h3>
-                <p className="text-white/90 text-sm">Renew your glow with organic touch</p>
-              </div>
-            </div>
-
-            {/* Right Column - Two Smaller Cards */}
-            <div className="flex flex-col gap-6">
-              {/* Organic Haircare */}
-              <div className="relative group overflow-hidden rounded-2xl h-[192px] cursor-pointer">
-                <Image
-                  src="/sample.png"
-                  alt="Organic Haircare"
-                  fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
-                
-                <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                  <h3 className="text-2xl font-bold mb-1">Organic Haircare</h3>
-                  <p className="text-white/90 text-xs">Nurture naturally, shine brilliantly</p>
-                </div>
-              </div>
-
-              {/* Holistic Wellness */}
-              <div className="relative group overflow-hidden rounded-2xl h-[192px] cursor-pointer bg-gradient-to-br from-teal-400 to-cyan-300">
-                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItaDJ2LTJoLTJ6bTAtNGgydjJoLTJ2LTJ6bS0yIDJ2Mmgydi0yaC0yem0wLTJ2Mmgydi0yaC0yem0wLTJ2Mmgydi0yaC0yem0yLTJ2Mmgydi0yaC0yem0wLTJ2Mmgydi0yaC0yem0tMiAydjJoMnYtMmgtMnptMC0ydjJoMnYtMmgtMnptMC0ydjJoMnYtMmgtMnoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-30"></div>
-                
-                <div className="relative h-full flex items-end p-6">
-                  <div className="text-white">
-                    <h3 className="text-2xl font-bold mb-1">Holistic Wellness</h3>
-                    <p className="text-white/90 text-xs">Balance body, mind, and soul</p>
-                  </div>
-                </div>
-
-                {/* Decorative Elements */}
-                <div className="absolute top-6 right-6 w-20 h-20 opacity-20">
-                  <div className="absolute inset-0 bg-white rounded-full"></div>
-                  <div className="absolute inset-2 bg-teal-300 rounded-full"></div>
-                </div>
-                
-                {/* Product visualization - mortar & pestle silhouette */}
-                <div className="absolute bottom-4 right-6 opacity-30">
-                  <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="40" cy="50" r="15" fill="white" opacity="0.3"/>
-                    <rect x="38" y="20" width="4" height="25" fill="white" opacity="0.4"/>
-                  </svg>
-                </div>
-              </div>
-            </div>
+          {/* Trust Badge */}
+          <div className="mt-16 inline-flex items-center gap-3 bg-white/20 backdrop-blur-md px-8 py-4 rounded-full">
+            <Heart className="w-6 h-6 text-white" />
+            <span className="text-white font-semibold">Trusted by 10,000+ Natural Health Enthusiasts</span>
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 }
 
